@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OfficeShare</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main id="login" class="login-shell">
+      <section class="login-panel">
+        <div>
+          <p class="eyebrow">OfficeShare</p>
+          <h1>团队文件服务</h1>
+        </div>
+        <form id="loginForm" class="stack">
+          <label>用户名<input name="username" autocomplete="username"></label>
+          <label>密码<input name="password" type="password" autocomplete="current-password"></label>
+          <button type="submit">登录</button>
+          <p id="loginError" class="error"></p>
+        </form>
+      </section>
+    </main>
+
+    <main id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <button id="sidebarToggle" class="ghost sidebar-toggle" title="折叠侧栏">☰</button>
+          <div class="brand">
+            <strong>OfficeShare</strong>
+            <span id="who"></span>
+          </div>
+        </div>
+        <nav class="nav-main">
+          <p class="nav-label">用户界面</p>
+          <button class="nav active" data-view="dashboard"><span class="nav-icon"><img class="nav-icon-img" src="/sidebar-icons/icon_54gcma7vmc9/home.svg" alt=""></span><span class="nav-text">概览</span></button>
+          <button class="nav" data-view="files"><span class="nav-icon"><img class="nav-icon-img" src="/sidebar-icons/icon_54gcma7vmc9/folder.svg" alt=""></span><span class="nav-text">文件管理</span></button>
+        </nav>
+        <nav class="nav-bottom">
+          <button class="nav" data-view="settings"><span class="nav-icon"><img class="nav-icon-img" src="/sidebar-icons/icon_54gcma7vmc9/gear-settings.svg" alt=""></span><span class="nav-text">设置</span></button>
+          <button class="nav admin-only" data-view="config"><span class="nav-icon"><img class="nav-icon-img" src="/sidebar-icons/icon_54gcma7vmc9/settings-filter.svg" alt=""></span><span class="nav-text">服务器配置</span></button>
+        </nav>
+        <button id="logout" class="ghost"><span class="nav-icon"><img class="nav-icon-img" src="/sidebar-icons/icon_54gcma7vmc9/loguot.svg" alt=""></span><span class="nav-text">退出</span></button>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <h2 id="title">文件工作台</h2>
+            <p id="subtitle">日常上传、下载、浏览和恢复文件</p>
+          </div>
+          <p id="notice"></p>
+        </header>
+
+        <section id="dashboard" class="view">
+          <section id="dashboardPanel" class="panel"></section>
+        </section>
+
+        <section id="files" class="view hidden">
+          <div class="file-station">
+            <aside class="file-tree-pane">
+              <div class="file-pane-title">
+                <strong>共享空间</strong>
+                <button id="refreshFilesBtn" class="muted-button">刷新</button>
+              </div>
+              <button class="tree-row trash-row" onclick="openTrashMode()" style="padding-left:10px">
+                <span class="tree-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.5 9.4 7.55 4.24A2 2 0 0 0 5 6.08V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9.41a2 2 0 0 0-.5-1.01ZM5 18h10v-3H5v3Zm1.5-9.59 1.45 1.45A1.5 1.5 0 0 0 8 11.41V18h8v-3a1.5 1.5 0 0 0-2.95-.59L6.5 8.41ZM10 9h4v10h-4V9Z"></path></svg></span>
+                <span>回收站</span>
+              </button>
+              <div id="fileTree" class="file-tree"></div>
+            </aside>
+            <div id="filePaneSplitter" class="pane-splitter" role="separator" aria-orientation="vertical" aria-label="调整目录树宽度"></div>
+            <section class="file-browser-pane">
+              <div class="file-browser-head">
+                <div id="breadcrumb" class="breadcrumb"></div>
+                <div class="file-search-wrap">
+                  <button id="fileSearchToggle" class="file-search-icon-btn" type="button" title="搜索">🔍</button>
+                  <input id="fileSearchInput" class="path-chip file-search" type="search" placeholder="搜索当前文件夹及子文件夹">
+                </div>
+              </div>
+              <section id="folderNoticeCard" class="folder-notice-card">
+                <div class="folder-notice-head">
+                  <strong>公告区</strong>
+                  <button id="newFolderNoticeBtn" class="muted-button">新建公告</button>
+                </div>
+                <div id="folderNoticeList" class="folder-notice-list"></div>
+              </section>
+              <div class="file-toolbar">
+                <div class="file-toolbar-container">
+                  <label id="uploadActionBtn" class="file-button icon-action primary-action" title="上传文件" aria-label="上传文件"><input id="uploadInput" type="file" multiple></label>
+                  <button id="newFileBtn" class="icon-action primary-action" title="新建文件" aria-label="新建文件"></button>
+                  <button id="newFolderBtn" class="icon-action primary-action" title="新建文件夹" aria-label="新建文件夹"></button>
+                  <button id="shareSelectedBtn" class="icon-button" title="分享"></button>
+                  <button id="renameSelectedBtn" class="icon-button" title="重命名"></button>
+                  <button id="copySelectedBtn" class="icon-button" title="复制"></button>
+                  <button id="moveSelectedBtn" class="icon-button" title="移动"></button>
+                  <button id="deleteSelectedBtn" class="icon-button danger" title="删除"></button>
+                  <button id="downloadSelectedBtn" class="icon-button" title="下载"></button>
+                  <button id="infoSelectedBtn" class="icon-button" title="信息"></button>
+                  <button id="multiSelectBtn" class="icon-button" title="多选"></button>
+                  <button id="viewModeBtn" class="icon-button" title="切换视图"></button>
+                  <button id="trashMultiSelectBtn" class="icon-button trash-action" title="多选"></button>
+                  <button id="trashRestoreSelectedBtn" class="icon-button trash-action" title="还原选中项"></button>
+                  <button id="trashDeleteSelectedBtn" class="icon-button danger trash-action" title="永久删除"></button>
+                  <button id="trashClearAllBtn" class="icon-button danger trash-action" title="清空回收站"></button>
+                </div>
+              </div>
+              <div class="table-wrap file-table-wrap">
+                <table class="file-table">
+                  <thead><tr><th>名称</th><th>大小</th><th>最后修改</th><th>权限</th></tr></thead>
+                  <tbody id="fileRows"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="settings" class="view hidden">
+          <div class="tabs">
+            <button class="tab active" data-settings-tab="connect">连接</button>
+            <button class="tab" data-settings-tab="password">修改密码</button>
+            <button class="tab" data-settings-tab="logs">日志</button>
+          </div>
+
+          <section id="connectPanel" class="panel">
+            <div class="hint-panel">
+              <strong>映射网络驱动器</strong>
+              <span>根据当前登录用户生成 Windows 映射脚本。输入的是当前用户自己设置的 Web/SMB 密码，脚本中使用 * 避免明文显示。</span>
+            </div>
+            <div class="code-panel">
+              <p>当前用户</p>
+              <code id="connectUser"></code>
+              <p>Windows 一键脚本</p>
+              <code id="connectCommand"></code>
+              <div class="toolbar compact-toolbar">
+                <button id="copyConnectCommandBtn">复制命令</button>
+                <button id="downloadConnectBatBtn">下载 .bat 脚本</button>
+              </div>
+              <p>断开映射脚本</p>
+              <code id="disconnectCommand"></code>
+              <pre id="connectNotes" class="sync-result"></pre>
+            </div>
+          </section>
+
+          <section id="passwordPanel" class="panel hidden">
+            <div class="hint-panel">
+              <strong>修改密码</strong>
+              <span>用户修改密码后，系统会同步更新 Web 登录密码和 Windows/SMB 映射密码。</span>
+            </div>
+            <form id="passwordForm" class="settings-grid compact-form">
+              <label>当前密码<input name="currentPassword" type="password" autocomplete="current-password"></label>
+              <label>新密码<input name="password" type="password" autocomplete="new-password"></label>
+              <label>确认新密码<input name="confirmPassword" type="password" autocomplete="new-password"></label>
+              <button>修改并同步密码</button>
+            </form>
+            <pre id="passwordSyncResult" class="sync-result"></pre>
+          </section>
+
+          <section id="settingsLogsPanel" class="panel hidden">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>时间</th><th>用户</th><th>动作</th><th>对象</th><th>详情</th></tr></thead>
+                <tbody id="settingsLogRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="config" class="view hidden admin-only">
+          <div class="tabs">
+            <button class="tab active" data-config-tab="server">服务器</button>
+            <button class="tab" data-config-tab="users">用户</button>
+            <button class="tab" data-config-tab="groups">群组</button>
+            <button class="tab" data-config-tab="permissions">权限</button>
+            <button class="tab" data-config-tab="templates">目录模板</button>
+          </div>
+
+          <section id="serverPanel" class="panel">
+            <div id="aclModelSummary" class="model-summary"></div>
+            <form id="settingsForm" class="settings-grid">
+              <label>本地共享文件根目录<input name="storagePath" placeholder="E:\project\fileshare\storage\files"></label>
+              <label>服务器地址<input name="serverHost" placeholder="192.168.1.100"></label>
+              <label>检测到的本机IP<select id="hostAddressSelect"></select></label>
+              <label>SMB 共享名称<input name="shareName" placeholder="TeamShare"></label>
+              <label class="check"><input name="smbEnabled" type="checkbox"> 启用 SMB 挂载说明</label>
+              <label>Windows 用户名前缀<input name="windowsUserPrefix" placeholder="os_"></label>
+              <label>Windows 组名前缀<input name="windowsGroupPrefix" placeholder="osg_"></label>
+              <label>成员系统组名<input name="windowsMembersGroup" placeholder="members"></label>
+              <label>管理员系统组名<input name="windowsAdminsGroup" placeholder="admins"></label>
+              <label>无权限时 ACL 处理
+                <select name="noAccessAclMode">
+                  <option value="remove">移除授权</option>
+                  <option value="deny">显式拒绝</option>
+                </select>
+              </label>
+              <label class="check"><input name="windowsSyncEnabled" type="checkbox"> 保存用户、群组、权限时同步 Windows</label>
+              <label class="check"><input name="createWindowsUsers" type="checkbox"> 自动创建本地 Windows 用户</label>
+              <label class="check"><input name="createSmbShare" type="checkbox"> 自动创建 SMB 共享</label>
+              <button>保存服务器配置</button>
+            </form>
+            <div class="code-panel">
+              <p>Windows 同步状态</p>
+              <code id="windowsStatus"></code>
+              <p>同步规则</p>
+              <code>SMB 共享层级只执行 Authenticated Users；具体可见、可读、可写由 NTFS ACL 控制。应用用户映射为 Windows 本地用户，应用群组映射为 Windows 本地组。成员系统组只用于根目录遍历，管理员系统组拥有完全控制。</code>
+              <button id="restartElevatedBtn" class="sync-button">以管理员权限重启服务</button>
+              <p>Windows 挂载命令</p>
+              <code id="winMount"></code>
+              <p>macOS 访问地址</p>
+              <code id="macMount"></code>
+              <button id="syncWindowsBtn" class="sync-button">立即同步到 Windows</button>
+              <pre id="syncResult" class="sync-result"></pre>
+              <p>共享目录诊断</p>
+              <pre id="storageStatus" class="sync-result"></pre>
+            </div>
+          </section>
+
+          <section id="usersPanel" class="panel hidden">
+            <div class="hint-panel">
+              <strong>用户映射</strong>
+              <span>应用用户用于 Web 登录；映射 Windows 用户用于 SMB 挂载认证。请使用"重置 Web/SMB 密码"让两个密码保持一致。</span>
+            </div>
+            <form id="userForm" class="inline-form">
+              <input name="username" placeholder="用户名">
+              <input name="displayName" placeholder="显示名称">
+              <input name="password" placeholder="初始密码" value="123456">
+              <select name="role">
+                <option value="member">普通成员</option>
+                <option value="dept_admin">部门管理员</option>
+                <option value="admin">系统管理员</option>
+              </select>
+              <button>创建用户</button>
+            </form>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>应用用户</th><th>Windows 用户</th><th>系统组</th><th>显示名</th><th>角色</th><th>状态</th><th>失败登录</th><th>操作</th></tr></thead>
+                <tbody id="userRows"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="groupsPanel" class="panel hidden">
+            <div class="hint-panel">
+              <strong>群组授权</strong>
+              <span>优先给群组配置文件夹权限，少数例外再给个人授权。群组成员会同步到 Windows 本地组。</span>
+            </div>
+            <form id="groupForm" class="inline-form">
+              <input name="name" placeholder="群组名称">
+              <input name="description" placeholder="说明">
+              <button>创建群组</button>
+            </form>
+            <div id="groupRows" class="grid-list"></div>
+          </section>
+
+          <section id="permissionsPanel" class="panel hidden">
+            <div class="hint-panel">
+              <strong>共享文件夹权限</strong>
+              <span>参考 NAS 的目标授权方式：先在左侧选择目录，再给群组或用户设置无权限、只读、读写或管理。未设置表示继承上级目录。</span>
+            </div>
+            <div class="permission-layout">
+              <aside class="folder-pane">
+                <div class="pane-head">
+                  <strong>共享目录</strong>
+                  <button id="refreshPermFoldersBtn" class="muted-button">刷新</button>
+                </div>
+                <div id="permFolderList" class="folder-list"></div>
+              </aside>
+              <section class="permission-pane">
+                <div class="perm-head">
+                  <div>
+                    <p>当前目录</p>
+                    <h3 id="permCurrentPath">/</h3>
+                  </div>
+                  <div class="actions">
+                    <button id="savePermissionMatrixBtn">保存并同步</button>
+                  </div>
+                </div>
+                <div class="legend-row">
+                  <span class="pill">未设置 = 继承上级</span>
+                  <span class="pill">无权限优先级最高</span>
+                  <span class="pill">SMB 挂载后由 NTFS ACL 生效</span>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th>类型</th><th>名称</th><th>Windows 身份</th><th>权限</th><th>当前结果</th></tr></thead>
+                    <tbody id="permRows"></tbody>
+                  </table>
+                </div>
+                <pre id="permSyncResult" class="sync-result"></pre>
+              </section>
+            </div>
+          </section>
+
+          <section id="templatesPanel" class="panel hidden">
+            <div class="hint-panel">
+              <strong>初始化模板</strong>
+              <span>模板会创建指定目录、推荐群组和预置文件夹权限。已有目录和群组会保留，不会清空数据。</span>
+            </div>
+            <div id="templateRows" class="template-list"></div>
+            <form id="templateEditor" class="template-editor">
+              <label>模板 JSON<textarea name="definition" rows="16"></textarea></label>
+              <div class="toolbar compact-toolbar">
+                <button type="submit">保存模板</button>
+                <button type="button" id="newTemplateBtn">创建新模板</button>
+                <button type="button" id="exportTemplateBtn">复制当前 JSON</button>
+              </div>
+            </form>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <div id="modalOverlay" class="modal-overlay hidden">
+      <section class="modal">
+        <header class="modal-head">
+          <h3 id="modalTitle"></h3>
+          <button id="modalCloseBtn" class="icon-button" title="关闭">✕</button>
+        </header>
+        <div id="modalBody" class="modal-body"></div>
+        <footer id="modalActions" class="modal-actions"></footer>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

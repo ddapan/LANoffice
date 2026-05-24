@@ -1,0 +1,13 @@
+{
+  "name": "office-share-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lightweight LAN file collaboration server for small Windows teams.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}
