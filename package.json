@@ -1,8 +1,8 @@
 {
-  "name": "office-share-mvp",
+  "name": "lanoffice",
   "version": "0.1.0",
   "private": true,
-  "description": "Lightweight LAN file collaboration server for small Windows teams.",
+  "description": "Lightweight LAN office file collaboration server for small teams.",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js"

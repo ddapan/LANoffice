@@ -34,7 +34,7 @@ const FILE_TREE_MIN_WIDTH = 220;
 const FILE_TREE_MAX_WIDTH = 680;
 
 function normalizeUiText() {
-  document.title = "OfficeShare";
+  document.title = "LANOffice";
   const setText = (selector, text) => {
     const el = document.querySelector(selector);
     if (el) el.textContent = text;
@@ -53,7 +53,7 @@ function normalizeUiText() {
       label.insertBefore(document.createTextNode(text), label.firstChild || null);
     }
   };
-  setText(".login-panel .eyebrow", "OfficeShare");
+  setText(".login-panel .eyebrow", "LANOffice");
   setText(".login-panel h1", "团队文件服务");
   const loginUserLabel = document.querySelector("#loginForm label:nth-of-type(1)");
   if (loginUserLabel) loginUserLabel.innerHTML = '用户名<input name="username" autocomplete="username">';

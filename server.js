@@ -44,7 +44,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`OfficeShare MVP listening on http://localhost:${PORT}`);
+  console.log(`LANOffice listening on http://localhost:${PORT}`);
 });
 
 function initDb() {
