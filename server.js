@@ -8,15 +8,30 @@ const { execFile } = require("node:child_process");
 const { TextDecoder } = require("node:util");
 const { DatabaseSync } = require("node:sqlite");
 
-const ROOT = __dirname;
-const DATA_DIR = path.join(ROOT, "data");
-const DEFAULT_STORAGE_DIR = path.join(ROOT, "storage", "files");
-const PUBLIC_DIR = path.join(ROOT, "public");
+let ROOT = __dirname;
+
+const isPkg = typeof process.pkg !== "undefined";
+if (isPkg && process.pkg) {
+  ROOT = path.dirname(process.execPath);
+}
+
+let DATA_DIR = path.join(ROOT, "data");
+let DEFAULT_STORAGE_DIR = path.join(ROOT, "storage", "files");
+let PUBLIC_DIR = path.join(ROOT, "public");
+
+if (isPkg) {
+  const homeDir = os.homedir();
+  const appDataDir = path.join(homeDir, ".lanoffice");
+  DATA_DIR = path.join(appDataDir, "data");
+  DEFAULT_STORAGE_DIR = path.join(appDataDir, "storage", "files");
+  PUBLIC_DIR = path.join(ROOT, "public");
+}
+
 const DB_PATH = path.join(DATA_DIR, "fileshare.db");
 const PORT = Number(process.env.PORT || 8080);
 const PERSONAL_SPACE_BASE = "/homes";
 
-for (const dir of [DATA_DIR, DEFAULT_STORAGE_DIR, path.join(ROOT, "storage", ".trash"), PUBLIC_DIR]) {
+for (const dir of [DATA_DIR, DEFAULT_STORAGE_DIR, path.join(DATA_DIR, "..", ".trash"), PUBLIC_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 

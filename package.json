@@ -5,9 +5,20 @@
   "description": "Lightweight LAN office file collaboration server for small teams.",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "pkg": "pkg -t node22-win-x64 -o LANOffice.exe server.js",
+    "pkg:all": "pkg -t node22-win-x64,node22-linux-x64 -o LANOffice server.js"
   },
   "engines": {
     "node": ">=22.5.0"
+  },
+  "bin": "server.js",
+  "pkg": {
+    "assets": [
+      "public/**/*"
+    ],
+    "targets": [
+      "node22-win-x64"
+    ]
   }
 }

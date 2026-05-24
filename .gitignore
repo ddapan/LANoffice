@@ -24,3 +24,9 @@ storage/
 *.swp
 *.swo
 *~
+
+# Build
+LANOffice.exe
+release/
+*.exe
+
